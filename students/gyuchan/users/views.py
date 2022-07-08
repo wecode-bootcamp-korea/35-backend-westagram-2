@@ -3,13 +3,16 @@ import re
 
 from django.http  import JsonResponse
 from django.views import View
+from django.core.exceptions import ObjectDoesNotExist
+
 
 from users.models import User
 
 class SignUpView(View):
     def post(self, request):
+        data = json.loads(request.body)
+        
         try:
-            data           = json.loads(request.body)
             check_email    = "^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
             check_password = "^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$"
             
@@ -38,20 +41,22 @@ class SignUpView(View):
 
 class LogInView(View):
     def post(self, request):
+        # 데이터를 받음
+        data = json.loads(request.body)
+
         try:
-            data = json.loads(request.body)
             
-            user_id       = data['id']
+            user_email    = data['email']
             user_password = data['password']
             
-            user_table = User.objects.filter(email=user_id)
+            check_user = User.objects.get(email=user_email)
 
-            if not user_table.exists():
-                return JsonResponse({'message':'DOES_NOT_EXISTS'}, status=400)
-            if user_table[0].password != user_password:
+            if check_user.password != user_password:
                 return JsonResponse({'message':'PASSWORD_NOT_MATCH'}, status=400)
 
 
             return JsonResponse({'message':'SUCCESS'}, status=200)
         except KeyError:
             return JsonResponse({'message':'KEY_ERROR'}, status=400)
+        except ObjectDoesNotExist:
+            return JsonResponse({'message':'DOES_NOT_EXIST'}, status=400)
