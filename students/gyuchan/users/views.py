@@ -3,7 +3,6 @@ import re
 
 from django.http  import JsonResponse
 from django.views import View
-from django.core.exceptions import ObjectDoesNotExist
 
 
 from users.models import User
@@ -41,22 +40,19 @@ class SignUpView(View):
 
 class LogInView(View):
     def post(self, request):
-        # 데이터를 받음
-        data = json.loads(request.body)
-
         try:
-            
-            user_email    = data['email']
-            user_password = data['password']
-            
-            check_user = User.objects.get(email=user_email)
+            user_data = json.loads(request.body)
+            email     = user_data['email']
+            password  = user_data['password']
 
-            if check_user.password != user_password:
-                return JsonResponse({'message':'PASSWORD_NOT_MATCH'}, status=400)
+            user = User.objects.get(email=email)
+
+            if user.password != password:
+                return JsonResponse({'message':'INVALID_USER'}, status=401)
 
 
             return JsonResponse({'message':'SUCCESS'}, status=200)
         except KeyError:
             return JsonResponse({'message':'KEY_ERROR'}, status=400)
-        except ObjectDoesNotExist:
-            return JsonResponse({'message':'DOES_NOT_EXIST'}, status=400)
+        except User.DoesNotExist:
+            return JsonResponse({'message':'INVALID_USER'}, status=401)
