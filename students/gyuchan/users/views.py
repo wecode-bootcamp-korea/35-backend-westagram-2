@@ -20,9 +20,9 @@ class SignUpView(View):
             
             if User.objects.filter(email=user_email).exists():
                 return JsonResponse({'message':'ALREADY_EXISTS'}, status=400)
-            if not re.match(user_email, check_email) == None:
+            if not re.match(user_email, check_email):
                 return JsonResponse({'message':'EMAIL_NOT_MATCH'}, status=400)
-            if not re.match(user_password, check_password) == None:
+            if not re.match(user_password, check_password):
                 return JsonResponse({'message':'PASSWORD_NOT_MATCH'}, status=400)
 
             
