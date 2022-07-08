@@ -53,3 +53,11 @@ class UsersView(View):
             return JsonResponse({'message':'CREATED'}, status=201)
         except KeyError:
             return JsonResponse({'message':'KEY_ERROR'}, status=400)
+
+    def get(self, request):
+        '''
+        request.body = {
+            "email" = '',
+            "password" = ''
+        }
+        '''
