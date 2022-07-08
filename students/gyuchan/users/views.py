@@ -46,9 +46,9 @@ class LogInView(View):
             
             user_table = User.objects.filter(email=user_id)
 
-            if user_table.exists():
+            if not user_table.exists():
                 return JsonResponse({'message':'DOES_NOT_EXISTS'}, status=400)
-            if user_table.password != user_password:
+            if user_table[0].password != user_password:
                 return JsonResponse({'message':'PASSWORD_NOT_MATCH'}, status=400)
 
 
