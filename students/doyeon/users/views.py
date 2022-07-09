@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from django.views import View
 from django.utils import timezone
 
-from users.models import User
+from .models import User
 
 class UserView(View):
     def post(self, request):
@@ -38,25 +38,28 @@ class UserView(View):
             regx_email    = '^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
             regx_password = '^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$'
 
-
-            if len(email) or len(password) == 0:
-                raise KeyError
             if re.compile(regx_email).match(email) is None:
-                raise KeyError
+                raise ValueError("잘못된 형식의 이메일입니다.")
             if re.compile(regx_password).match(password) is None:
-                raise KeyError
-            if User.objects.filter(email=email).exist():
-                raise KeyError
+                raise ValueError("잘못된 형식의 비밀번호입니다.")
+            if User.objects.filter(email=email).exists():
+                raise ValueError("존재하는 이메일입니다.")
+            if User.objects.filter(phone_number=phone_number).exists():
+                raise ValueError("등록된 번호입니다.")
 
-            user = User.object.create(
-                name         = name,
-                email        = email,
-                password     = password,
-                phone_number = phone_number,
-                create_at    = timezone.now(),
-                update_at    = timezone.now(),
+        except KeyError :
+            return JsonResponse({"message":"keyerror"}, status=400)
+        except ValueError as e:
+            return JsonResponse({"message":f"{e}"}, status=400)
+
+        else:
+            user = User.objects.create(
+                name=name,
+                email=email,
+                password=password,
+                phone_number=phone_number,
+                create_at=timezone.now(),
+                update_at=timezone.now(),
             )
-            return JsonResponse({"message":"Success"}, status=201)
+            return JsonResponse({"message": "Success"}, status=201)
 
-        except KeyError:
-            return JsonResponse({"message":"KeyError"}, status=400)
