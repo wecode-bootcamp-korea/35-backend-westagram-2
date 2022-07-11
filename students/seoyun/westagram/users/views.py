@@ -18,7 +18,7 @@ class SignUpView(View):
             phone_number     = user_data['phone_number']
 
             email_check      = "^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
-            password_check   = "^(?=.*[A-Zga-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$"
+            password_check   = "^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$"
 
             if User.objects.filter(email=email):
                 return JsonResponse({'message':'이미 가입된 이메일 입니다.'}, status=400)
@@ -31,7 +31,7 @@ class SignUpView(View):
 
             hashed_password  = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
             decoded_password = hashed_password.decode('utf-8')
-            
+
             User.objects.create(
                 name         = name,
                 email        = email,
