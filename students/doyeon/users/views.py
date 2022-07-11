@@ -21,12 +21,10 @@ class UserView(View):
             regx_phone_number = '^\d{3}-\d{3,4}-\d{4}$'
 
             check_regx(regx_email, email, "EMAIL")
-            if User.objects.filter(email = email).exists():
-                raise ValueError("EXISTED E_MAIL")
+            does_existed(email, "EMAIL")
             check_regx(regx_password, password, "PASSWORD")
             check_regx(regx_phone_number, phone_number, "PHONE_NUMBER")
-            if User.objects.filter(phone_number = phone_number).exists():
-                raise ValueError("EXISTED PHONE_NUMBER")
+            does_existed(phone_number, "PHONE_NUMBER")
 
             User.objects.create(
                 name         = name,
@@ -34,6 +32,7 @@ class UserView(View):
                 password     = password,
                 phone_number = phone_number,
             )
+
             return JsonResponse({"message": "SUCCESS"}, status=201)
 
         except KeyError:
@@ -44,3 +43,7 @@ class UserView(View):
 def check_regx(pattern, field_data, target_field):
     if not re.compile(pattern).match(field_data):
         raise ValueError(f"INVILD_{target_field}")
+
+def does_existed(data, target_field):
+    if User.objects.is_existed(data).exists():
+        raise ValueError(f"EXISTED_{target_field}")
