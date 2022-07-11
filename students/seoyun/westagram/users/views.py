@@ -18,7 +18,7 @@ class SignUpView(View):
             email_check      = "^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
             password_check   = "^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$"
 
-            if User.objects.filter(email=email).exists():
+            if User.objects.get(email=email).exists():
                 return JsonResponse({'message':'이미 가입된 이메일 입니다.'}, status=400)
             
             if not re.match(email_check,email):
