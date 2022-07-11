@@ -27,8 +27,7 @@ class SignUpView(View):
             if not re.match(check_password, user_password):
                 return JsonResponse({'message': 'PASSWORD_NOT_MATCH'}, status=400)
 
-            hash_password = bcrypt.hashpw(
-                user_password.encode('utf-8'), bcrypt.gensalt())
+            hash_password = bcrypt.hashpw(user_password.encode('utf-8'), bcrypt.gensalt())
 
             User.objects.create(
                 name         = user_name,
