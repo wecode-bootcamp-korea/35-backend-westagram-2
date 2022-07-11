@@ -9,20 +9,22 @@ from .models import User
 class UserView(View):
     def post(self, request):
         try:
-            data            = json.loads(request.body)
+            data              = json.loads(request.body)
 
-            name            = data["name"]
-            email           = data["email"]
-            password        = data["password"]
-            phone_number    = data["phone_number"]
+            name              = data["name"]
+            email             = data["email"]
+            password          = data["password"]
+            phone_number      = data["phone_number"]
 
-            regx_email      = '^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
-            regx_password   = '^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$'
+            regx_email        = '^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+            regx_password     = '^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$'
+            regx_phone_number = '^\d{3}-\d{3,4}-\d{4}$'
 
-            check_regx(regx_email, email)
+            check_regx(regx_email, email, "EMAIL")
             if User.objects.filter(email = email).exists():
                 raise ValueError("EXISTED E_MAIL")
-            check_regx(regx_password, password)
+            check_regx(regx_password, password, "PASSWORD")
+            check_regx(regx_phone_number, phone_number, "PHONE_NUMBER")
             if User.objects.filter(phone_number = phone_number).exists():
                 raise ValueError("EXISTED PHONE_NUMBER")
 
@@ -39,6 +41,6 @@ class UserView(View):
         except ValueError as e:
             return JsonResponse({"message": f"{e}"}, status=400)
 
-def check_regx(pattern, data):
-    if not re.compile(pattern).match(data):
-        raise ValueError("INVALID_PASSWORD")
+def check_regx(pattern, field_data, target_field):
+    if not re.compile(pattern).match(field_data):
+        raise ValueError(f"INVILD_{target_field}")
