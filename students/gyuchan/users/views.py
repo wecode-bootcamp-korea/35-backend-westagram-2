@@ -4,13 +4,11 @@ import re
 from django.http  import JsonResponse
 from django.views import View
 
-
 from users.models import User
 
 class SignUpView(View):
     def post(self, request):
         data = json.loads(request.body)
-        
         try:
             check_email    = "^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
             check_password = "^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$"
@@ -26,7 +24,7 @@ class SignUpView(View):
                 return JsonResponse({'message':'EMAIL_NOT_MATCH'}, status=400)
             if not re.match(check_password, user_password):
                 return JsonResponse({'message':'PASSWORD_NOT_MATCH'}, status=400)
-            
+
             User.objects.create(
                 name         = user_name,
                 email        = user_email,
@@ -49,7 +47,6 @@ class LogInView(View):
 
             if user.password != password:
                 return JsonResponse({'message':'INVALID_USER'}, status=401)
-
 
             return JsonResponse({'message':'SUCCESS'}, status=200)
         except KeyError:
