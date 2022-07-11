@@ -7,7 +7,6 @@ from django.views import View
 
 from users.models import User
 
-
 class SignUpView(View):
     def post(self, request):
         data = json.loads(request.body)
@@ -39,7 +38,6 @@ class SignUpView(View):
             return JsonResponse({'message': 'CREATED'}, status=201)
         except KeyError:
             return JsonResponse({'message': 'KEY_ERROR'}, status=400)
-
 
 class LogInView(View):
     def post(self, request):
