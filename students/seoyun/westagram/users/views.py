@@ -29,13 +29,15 @@ class SignUpView(View):
             if not re.match(password_check, password):
                 return JsonResponse({'message':'비밀번호 조건을 확인해주세요.'}, status=400)
 
-            hashed_password  = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-            decoded_password = hashed_password.decode('utf-8')
+            hashed_password  = bcrypt.hashpw(
+                password.encode('utf-8'), 
+                bcrypt.gensalt()
+                ).decode('utf-8')
 
             User.objects.create(
                 name         = name,
                 email        = email,
-                password     = decoded_password,
+                password     = hashed_password,
                 phone_number = phone_number
             )
             return JsonResponse({'message':'SUCCESS'}, status=201)
