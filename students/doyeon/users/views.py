@@ -32,13 +32,12 @@ class UserView(View):
             if User.objects.filter(phone_number = phone_number).exists():
                 raise ValueError("EXISTED_PHONE-NUMBER")
 
-            hashed_password  = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-            decode_password  = hashed_password.decode('utf-8')
+            hashed_password  = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
             User.objects.create(
                 name         = name,
                 email        = email,
-                password     = decode_password,
+                password     = hashed_password,
                 phone_number = phone_number,
             )
 
@@ -80,5 +79,3 @@ def check_password_regx(pattern, field_data):
 def check_phone_regx(pattern, field_data):
     if not re.compile(pattern).match(field_data):
         raise ValueError("INVILD_PHONE-NUMBER")
-
-
