@@ -1,7 +1,9 @@
 import json, re
+import bcrypt, jwt
 
 from django.http import JsonResponse
 from django.views import View
+from django.conf import settings
 
 from .models import User
 
@@ -28,16 +30,18 @@ class SignUpView(View):
             if User.objects.filter(email=email).exists(): 
                 return JsonResponse({'message' : 'existent_email'}, status=400)
 
-            if User.objects.filter(name=name).exists(): 
+            if User.objects.filter(name=name).exists():
                 return JsonResponse({'message' : 'existent_name'}, status=400)
 
             if User.objects.filter(phone=phone).exists(): 
                 return JsonResponse({'message' : 'existent_phone'}, status=400)
+
+            hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
             
             User.objects.create(
                 name     = name,
                 email    = email,
-                password = password,
+                password = hashed_password,
                 phone    = phone,
             )
             return JsonResponse({'message' : 'SUCCESS'}, status=201)
@@ -50,14 +54,17 @@ class SignInView(View):
             data     = json.loads(request.body)
             email    = data['email']
             password = data['password']
+            user     = User.objects.get(email = email)
+            
+            if not bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')): 
+                return JsonResponse({'message' : 'INVALID_PASSWORD'}, status=401)
 
-            if not User.objects.filter(email = email, password = password).exists():
-                return JsonResponse({'message' : 'INVALID_USER'}, status=401)
-            return JsonResponse({'message' : 'SUCCESS'}, status=200)
+            token = jwt.encode({'id':user.id}, settings.SECRET_KEY, settings.ALGORITHM)
+            return JsonResponse({'ACCESS_TOKEN' : token }, status=200)
 
         except KeyError:
             return JsonResponse({'message' : 'KEY_ERROR'}, status=400)
-
-
+        except User.DoesNotExist:
+            return JsonResponse({'message' : 'INVALID_USER'}, status=401)
         
 
