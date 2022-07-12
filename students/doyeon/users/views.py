@@ -20,11 +20,16 @@ class UserView(View):
             regx_password     = '^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$'
             regx_phone_number = '^\d{3}-\d{3,4}-\d{4}$'
 
-            check_regx(regx_email, email, "EMAIL")
-            does_existed(email, "EMAIL")
-            check_regx(regx_password, password, "PASSWORD")
-            check_regx(regx_phone_number, phone_number, "PHONE_NUMBER")
-            does_existed(phone_number, "PHONE_NUMBER")
+            check_email_regx(regx_email, email)
+
+            if User.objects.filter(email = email).exists():
+                raise ValueError("EXISTED_EMAIL")
+
+            check_password_regx(regx_password, password)
+            check_phone_regx(regx_phone_number, phone_number)
+
+            if User.objects.filter(phone_number = phone_number).exists():
+                raise ValueError("EXISTED_PHONE-NUMBER")
 
             User.objects.create(
                 name         = name,
@@ -40,10 +45,14 @@ class UserView(View):
         except ValueError as e:
             return JsonResponse({"message": f"{e}"}, status=400)
 
-def check_regx(pattern, field_data, target_field):
+def check_email_regx(pattern, field_data):
     if not re.compile(pattern).match(field_data):
-        raise ValueError(f"INVILD_{target_field}")
+        raise ValueError("INVILD_EMAIL")
 
-def does_existed(data, target_field):
-    if User.objects.is_existed(data).exists():
-        raise ValueError(f"EXISTED_{target_field}")
+def check_password_regx(pattern, field_data):
+    if not re.compile(pattern).match(field_data):
+        raise ValueError("INVILD_PASSWORD")
+
+def check_phone_regx(pattern, field_data):
+    if not re.compile(pattern).match(field_data):
+        raise ValueError("INVILD_PHONE-NUMBER")
