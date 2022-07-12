@@ -1,3 +1,4 @@
+import bcrypt
 import json
 import re
 
@@ -31,10 +32,13 @@ class UserView(View):
             if User.objects.filter(phone_number = phone_number).exists():
                 raise ValueError("EXISTED_PHONE-NUMBER")
 
+            hashed_password  = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+            decode_password  = hashed_password.decode('utf-8')
+
             User.objects.create(
                 name         = name,
                 email        = email,
-                password     = password,
+                password     = decode_password,
                 phone_number = phone_number,
             )
 
