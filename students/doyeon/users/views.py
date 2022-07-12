@@ -76,5 +76,3 @@ def check_password_regx(pattern, field_data):
 def check_phone_regx(pattern, field_data):
     if not re.compile(pattern).match(field_data):
         raise ValueError("INVILD_PHONE-NUMBER")
-
-
