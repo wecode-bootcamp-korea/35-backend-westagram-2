@@ -56,7 +56,7 @@ class LoginView(View):
             user     = User.objects.get(email = email)
 
             if user.password != password:
-                return JsonResponse({"message" : "INVALID_USER"}, status=400)
+                return JsonResponse({"message" : "INVALID_USER"}, status=401)
 
             return JsonResponse({"message" : "SUCCESS"}, status=200)
 
