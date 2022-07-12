@@ -6,9 +6,9 @@ import jwt
 from django.shortcuts import render
 from django.http      import JsonResponse
 from django.views     import View
+from django.conf      import settings
 
 from users.models     import User
-from my_settings      import SECRET_KEY, ALGORITHM
 class SignUpView(View):
     def post(self, request):
         try:
@@ -53,7 +53,7 @@ class LogInView(View):
             login_user = User.objects.get(email=email)
             
             if bcrypt.checkpw(password.encode('utf-8'), login_user.password.encode('utf-8')):
-                token = jwt.encode({'user-id': login_user.id}, SECRET_KEY, ALGORITHM)
+                token = jwt.encode({'user-id': login_user.id}, settings.SECRET_KEY, settings.ALGORITHM)
                 return JsonResponse({'token': token}, status=201)
             return JsonResponse({"message": "INVALID_USER_PASSWORD"}, status=401)
         
