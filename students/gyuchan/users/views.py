@@ -3,11 +3,11 @@ import re
 import bcrypt
 import jwt
 
-from django.http import JsonResponse
+from django.http  import JsonResponse
 from django.views import View
 
 from users.models import User
-from my_settings import SECRET_KEY, ALGORITHM
+from my_settings  import SECRET_KEY, ALGORITHM
 
 class SignUpView(View):
     def post(self, request):
@@ -28,13 +28,12 @@ class SignUpView(View):
             if not re.match(check_password, user_password):
                 return JsonResponse({'message': 'PASSWORD_NOT_MATCH'}, status=400)
 
-            hashed_password = bcrypt.hashpw(user_password.encode('utf-8'), bcrypt.gensalt())
-            decoded_password = hashed_password.decode('utf-8')
+            hashed_password = bcrypt.hashpw(user_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
             User.objects.create(
                 name         = user_name,
                 email        = user_email,
-                password     = decoded_password,
+                password     = hashed_password,
                 phone_number = user_phone_number
             )
             return JsonResponse({'message': 'CREATED'}, status=201)
