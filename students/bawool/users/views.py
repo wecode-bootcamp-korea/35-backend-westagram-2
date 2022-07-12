@@ -1,10 +1,11 @@
 import json, re
-import bcrypt
+import bcrypt, jwt
 
 from django.http import JsonResponse
 from django.views import View
 
 from .models import User
+from westagram.settings import SECRET_KEY, ALGORITHM
 
 # Create your views here.
 
@@ -53,14 +54,18 @@ class SignInView(View):
             data     = json.loads(request.body)
             email    = data['email']
             password = data['password']
+            user     = User.objects.get(email = email)
 
-            if not User.objects.filter(email = email, password = password).exists():
+            if not User.objects.filter(email = email).exists(): 
                 return JsonResponse({'message' : 'INVALID_USER'}, status=401)
-            return JsonResponse({'message' : 'SUCCESS'}, status=200)
+
+            if not bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')): 
+                return JsonResponse({'message' : 'INVALID_PASSWORD'}, status=401)
+
+            token = jwt.encode({'id':user.id}, SECRET_KEY, ALGORITHM)
+            return JsonResponse({'ACCESS_TOKEN' : token }, status=200)
 
         except KeyError:
             return JsonResponse({'message' : 'KEY_ERROR'}, status=400)
-
-
         
 
