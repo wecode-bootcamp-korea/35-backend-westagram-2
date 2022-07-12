@@ -125,13 +125,13 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-#REMOVE_APPEND_SLASH_WARNING
+# REMOVE_APPEND_SLASH_WARNING
 APPEND_SLASH = False
 
-##CORS
-CORS_ORIGIN_ALLOW_ALL  =True
+# CORS
+CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
-    
+
 CORS_ALLOW_METHODS = (
     'DELETE',
     'GET',
@@ -140,7 +140,7 @@ CORS_ALLOW_METHODS = (
     'POST',
     'PUT',
 )
-    
+
 CORS_ALLOW_HEADERS = (
     'accept',
     'accept-encoding',
@@ -150,5 +150,5 @@ CORS_ALLOW_HEADERS = (
     'origin',
     'user-agent',
     'x-csrftoken',
-    'x-requested-with',    		
+    'x-requested-with',
 )
